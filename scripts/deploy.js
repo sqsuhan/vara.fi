@@ -2,8 +2,6 @@ const { ethers } = require("hardhat");
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  console.log("Deploying contracts with account:", deployer.address);
-  console.log("Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)));
 
   // ── 1. Deploy MockCollateralToken (MCOL, 18 dec) ──────────────────────────
   console.log("\n[1/4] Deploying MockCollateralToken...");
