@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { useAccount, useWriteContract, useReadContract } from "wagmi";
+import { useAccount, useWriteContract, useReadContract, useConfig } from "wagmi";
 import { formatUnits, maxUint256 } from "viem";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 import ERC20ABI from "../abi/ERC20.json";
-
-const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x0000000000000000000000000000000000000000";
-const USDC_ADDRESS = import.meta.env.VITE_USDC_ADDRESS || "0x0000000000000000000000000000000000000000";
+import { LENDING_POOL, USDC_ADDRESS } from "../constants/addresses";
 
 export default function RepayPanel() {
   const { address } = useAccount();
   const [status, setStatus] = useState("");
   const [step, setStep] = useState("idle");
 
+  const config = useConfig();
   const { writeContractAsync: writeAsync } = useWriteContract();
 
   const { data: posData } = useReadContract({
@@ -38,7 +38,7 @@ export default function RepayPanel() {
       setStep("approving");
       setStatus("Approving USDC transfer…");
 
-      await writeAsync({
+      const approveHash = await writeAsync({
         address: USDC_ADDRESS,
         abi: ERC20ABI,
         functionName: "approve",
@@ -46,18 +46,24 @@ export default function RepayPanel() {
         chainId: arcTestnet.id,
       });
 
+      setStatus("Waiting for approval confirmation…");
+      await waitForTransactionReceipt(config, { hash: approveHash });
+
       setStep("repaying");
       setStatus("Repaying loan…");
 
-      const tx = await writeAsync({
+      const repayHash = await writeAsync({
         address: LENDING_POOL,
         abi: LendingPoolABI,
         functionName: "repay",
         chainId: arcTestnet.id,
       });
 
+      setStatus("Finalizing repayment…");
+      await waitForTransactionReceipt(config, { hash: repayHash });
+
       setStep("success");
-      setStatus(`Loan repaid! Tx: ${tx.slice(0, 10)}…`);
+      setStatus(`Loan repaid successfully!`);
     } catch (err) {
       setStep("error");
       setStatus(err?.shortMessage || err?.message || "Transaction failed");

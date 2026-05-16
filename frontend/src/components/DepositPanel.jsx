@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { useAccount, useWriteContract, useReadContract } from "wagmi";
+import { useAccount, useWriteContract, useReadContract, useConfig } from "wagmi";
 import { parseUnits, formatUnits, maxUint256 } from "viem";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 import ERC20ABI from "../abi/ERC20.json";
-
-const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x0000000000000000000000000000000000000000";
-const MCOL_ADDRESS = import.meta.env.VITE_COLLATERAL_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
+import { LENDING_POOL, MCOL_ADDRESS } from "../constants/addresses";
 
 export default function DepositPanel() {
   const { address } = useAccount();
@@ -14,6 +13,7 @@ export default function DepositPanel() {
   const [status, setStatus] = useState("");
   const [step, setStep] = useState("idle"); 
 
+  const config = useConfig();
   const { writeContractAsync: writeAsync } = useWriteContract();
 
   const { data: colBalance } = useReadContract({
@@ -39,7 +39,7 @@ export default function DepositPanel() {
       setStep("approving");
       setStatus("Requesting MCOL approval…");
 
-      await writeAsync({
+      const approveHash = await writeAsync({
         address: MCOL_ADDRESS,
         abi: ERC20ABI,
         functionName: "approve",
@@ -47,10 +47,13 @@ export default function DepositPanel() {
         chainId: arcTestnet.id,
       });
 
+      setStatus("Waiting for approval confirmation…");
+      await waitForTransactionReceipt(config, { hash: approveHash });
+
       setStep("depositing");
       setStatus("Depositing to Vara.fi…");
 
-      const tx = await writeAsync({
+      const depositHash = await writeAsync({
         address: LENDING_POOL,
         abi: LendingPoolABI,
         functionName: "deposit",
@@ -58,8 +61,11 @@ export default function DepositPanel() {
         chainId: arcTestnet.id,
       });
 
+      setStatus("Finalizing deposit…");
+      await waitForTransactionReceipt(config, { hash: depositHash });
+
       setStep("success");
-      setStatus(`Deposit successful! Tx: ${tx.slice(0, 10)}…`);
+      setStatus(`Deposit successful! Funds are now earning interest.`);
       setAmount("");
     } catch (err) {
       setStep("error");

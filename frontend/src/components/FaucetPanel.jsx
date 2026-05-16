@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { useAccount, useWriteContract, useReadContract } from "wagmi";
+import { useAccount, useWriteContract, useReadContract, useConfig } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import MockCollateralTokenABI from "../abi/MockCollateralToken.json";
-
-const MCOL_ADDRESS = import.meta.env.VITE_COLLATERAL_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
+import { MCOL_ADDRESS } from "../constants/addresses";
 
 export default function FaucetPanel() {
   const { address } = useAccount();
   const [status, setStatus] = useState("");
   const [step, setStep] = useState("idle");
 
+  const config = useConfig();
   const { writeContractAsync: writeAsync } = useWriteContract();
 
   const { data: colBalance } = useReadContract({
@@ -36,7 +37,7 @@ export default function FaucetPanel() {
       setStep("minting");
       setStatus("Minting 100 MCOL from Faucet…");
 
-      const tx = await writeAsync({
+      const hash = await writeAsync({
         address: MCOL_ADDRESS,
         abi: MockCollateralTokenABI,
         functionName: "mint",
@@ -44,8 +45,11 @@ export default function FaucetPanel() {
         chainId: arcTestnet.id,
       });
 
+      setStatus("Finalizing mint…");
+      await waitForTransactionReceipt(config, { hash });
+
       setStep("success");
-      setStatus(`Successfully minted! Tx: ${tx.slice(0, 10)}…`);
+      setStatus(`Successfully minted 100 MCOL!`);
     } catch (err) {
       setStep("error");
       setStatus(err?.shortMessage || err?.message || "Transaction failed");

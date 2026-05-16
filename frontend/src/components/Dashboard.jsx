@@ -2,9 +2,8 @@ import React from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 import { arcTestnet } from "../wagmi";
+import { LENDING_POOL } from "../constants/addresses";
 import LendingPoolABI from "../abi/LendingPool.json";
-
-const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x0000000000000000000000000000000000000000";
 
 export default function Dashboard() {
   const { address } = useAccount();

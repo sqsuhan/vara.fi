@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { useAccount, useWriteContract, useReadContract } from "wagmi";
+import { useAccount, useWriteContract, useReadContract, useConfig } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
-
-const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x0000000000000000000000000000000000000000";
+import { LENDING_POOL } from "../constants/addresses";
 
 export default function WithdrawPanel() {
   const { address } = useAccount();
@@ -12,6 +12,7 @@ export default function WithdrawPanel() {
   const [status, setStatus] = useState("");
   const [step, setStep] = useState("idle");
 
+  const config = useConfig();
   const { writeContractAsync: writeAsync } = useWriteContract();
 
   const { data: posData } = useReadContract({
@@ -39,7 +40,7 @@ export default function WithdrawPanel() {
       setStep("withdrawing");
       setStatus("Withdrawing MCOL collateral…");
 
-      const tx = await writeAsync({
+      const hash = await writeAsync({
         address: LENDING_POOL,
         abi: LendingPoolABI,
         functionName: "withdraw",
@@ -47,8 +48,11 @@ export default function WithdrawPanel() {
         chainId: arcTestnet.id,
       });
 
+      setStatus("Finalizing withdrawal…");
+      await waitForTransactionReceipt(config, { hash });
+
       setStep("success");
-      setStatus(`Withdrawal successful! Tx: ${tx.slice(0, 10)}…`);
+      setStatus(`Withdrawal successful! Your MCOL collateral has been returned to your wallet.`);
       setAmount("");
     } catch (err) {
       setStep("error");
