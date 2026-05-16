@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAccount, useWriteContract, useReadContract } from "wagmi";
 import { parseUnits, formatUnits, maxUint256 } from "viem";
+import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 import ERC20ABI from "../abi/ERC20.json";
 
@@ -20,6 +21,7 @@ export default function DepositPanel() {
     abi: ERC20ABI,
     functionName: "balanceOf",
     args: [address],
+    chainId: arcTestnet.id,
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
@@ -42,6 +44,7 @@ export default function DepositPanel() {
         abi: ERC20ABI,
         functionName: "approve",
         args: [LENDING_POOL, maxUint256],
+        chainId: arcTestnet.id,
       });
 
       setStep("depositing");
@@ -52,6 +55,7 @@ export default function DepositPanel() {
         abi: LendingPoolABI,
         functionName: "deposit",
         args: [parsed],
+        chainId: arcTestnet.id,
       });
 
       setStep("success");

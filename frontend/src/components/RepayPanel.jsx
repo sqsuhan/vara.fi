@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAccount, useWriteContract, useReadContract } from "wagmi";
 import { formatUnits, maxUint256 } from "viem";
+import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 import ERC20ABI from "../abi/ERC20.json";
 
@@ -19,6 +20,7 @@ export default function RepayPanel() {
     abi: LendingPoolABI,
     functionName: "getPosition",
     args: [address],
+    chainId: arcTestnet.id,
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
@@ -41,6 +43,7 @@ export default function RepayPanel() {
         abi: ERC20ABI,
         functionName: "approve",
         args: [LENDING_POOL, maxUint256],
+        chainId: arcTestnet.id,
       });
 
       setStep("repaying");
@@ -50,6 +53,7 @@ export default function RepayPanel() {
         address: LENDING_POOL,
         abi: LendingPoolABI,
         functionName: "repay",
+        chainId: arcTestnet.id,
       });
 
       setStep("success");

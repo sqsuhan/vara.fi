@@ -1,6 +1,7 @@
 import React from "react";
 import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
+import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 
 const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x0000000000000000000000000000000000000000";
@@ -8,13 +9,14 @@ const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x00000000000
 export default function Dashboard() {
   const { address } = useAccount();
 
-  const { data: posData } = useReadContract({
+  const { data: posData, error: readError } = useReadContract({
     address: LENDING_POOL,
     abi: LendingPoolABI,
     functionName: "getPosition",
     args: [address],
+    chainId: arcTestnet.id,
     query: {
-      enabled: !!address,
+      enabled: !!address && LENDING_POOL !== "0x0000000000000000000000000000000000000000",
       refetchInterval: 5000, 
     },
   });
@@ -67,6 +69,11 @@ export default function Dashboard() {
         <div>
           <h2 className="text-2xl font-black text-white tracking-tight">Position Overview</h2>
           <p className="text-sm font-medium text-slate-400 mt-1">Real-time stats on Arc Testnet</p>
+          {readError && (
+            <p className="text-[10px] text-red-400 font-bold mt-2 uppercase tracking-widest">
+              ⚠️ Contract Error: {readError.shortMessage || "Failed to fetch data"}
+            </p>
+          )}
         </div>
         
         {/* Health Factor Display */}

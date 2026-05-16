@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAccount, useWriteContract, useReadContract } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
+import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 
 const LENDING_POOL = import.meta.env.VITE_LENDING_POOL_ADDRESS || "0x0000000000000000000000000000000000000000";
@@ -18,6 +19,7 @@ export default function WithdrawPanel() {
     abi: LendingPoolABI,
     functionName: "getPosition",
     args: [address],
+    chainId: arcTestnet.id,
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
@@ -42,6 +44,7 @@ export default function WithdrawPanel() {
         abi: LendingPoolABI,
         functionName: "withdraw",
         args: [parsed],
+        chainId: arcTestnet.id,
       });
 
       setStep("success");

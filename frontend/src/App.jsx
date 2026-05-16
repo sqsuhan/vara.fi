@@ -1,5 +1,6 @@
 import React from "react";
 import { useAccount, useConnect, useDisconnect, useChainId, useSwitchChain } from "wagmi";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { arcTestnet } from "./wagmi";
 import Dashboard from "./components/Dashboard";
 import DepositPanel from "./components/DepositPanel";
@@ -10,11 +11,14 @@ import FaucetPanel from "./components/FaucetPanel";
 
 function App() {
   const { isConnected, address } = useAccount();
-  const { connectors, connect, isPending } = useConnect();
+  const { connectors, isPending } = useConnect();
+  const { openConnectModal } = useConnectModal();
   const { disconnect } = useDisconnect();
   
   const chainId = useChainId();
   const { switchChain, isPending: isSwitching } = useSwitchChain();
+  
+  // Refined network check: ensure we are connected and the chainId is exactly arcTestnet.id
   const isWrongNetwork = isConnected && chainId !== arcTestnet.id;
 
   return (
@@ -98,8 +102,7 @@ function App() {
       <main className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-12 lg:py-20">
         {!isConnected ? (
           <NotConnected 
-            connectors={connectors} 
-            connect={connect} 
+            openConnectModal={openConnectModal} 
             isPending={isPending} 
           />
         ) : isWrongNetwork ? (
@@ -167,9 +170,7 @@ function WrongNetwork({ switchChain, isSwitching }) {
   );
 }
 
-function NotConnected({ connectors, connect, isPending }) {
-  const metaMask = connectors.find((c) => c.name === "MetaMask");
-
+function NotConnected({ openConnectModal, isPending }) {
   return (
     <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 animate-slide-up">
       <div className="relative w-full max-w-2xl mx-auto">
@@ -189,34 +190,28 @@ function NotConnected({ connectors, connect, isPending }) {
             Supply assets, earn yield, and borrow against collateral instantly with zero slippage.
           </p>
 
-          {metaMask ? (
-            <button
-              onClick={() => connect({ connector: metaMask })}
-              disabled={isPending}
-              className="btn-primary w-full md:w-auto px-10 py-5 rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed mx-auto flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,229,255,0.3)] hover:shadow-[0_0_40px_rgba(0,229,255,0.5)]"
-            >
-              {isPending ? (
-                <>
-                  <svg className="w-6 h-6 animate-spin text-midnight" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  Initializing Core...
-                </>
-              ) : (
-                <>
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                  Connect Wallet to Enter
-                </>
-              )}
-            </button>
-          ) : (
-            <div className="inline-block px-8 py-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 font-semibold shadow-[0_0_20px_rgba(239,68,68,0.15)]">
-              ⚠️ MetaMask extension not detected
-            </div>
-          )}
+          <button
+            onClick={() => openConnectModal()}
+            disabled={isPending}
+            className="btn-primary w-full md:w-auto px-10 py-5 rounded-2xl text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed mx-auto flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(0,229,255,0.3)] hover:shadow-[0_0_40px_rgba(0,229,255,0.5)]"
+          >
+            {isPending ? (
+              <>
+                <svg className="w-6 h-6 animate-spin text-midnight" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Initializing Core...
+              </>
+            ) : (
+              <>
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+                Connect Wallet to Enter
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>

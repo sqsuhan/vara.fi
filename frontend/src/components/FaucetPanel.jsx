@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAccount, useWriteContract, useReadContract } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
+import { arcTestnet } from "../wagmi";
 import MockCollateralTokenABI from "../abi/MockCollateralToken.json";
 
 const MCOL_ADDRESS = import.meta.env.VITE_COLLATERAL_TOKEN_ADDRESS || "0x0000000000000000000000000000000000000000";
@@ -17,6 +18,7 @@ export default function FaucetPanel() {
     abi: MockCollateralTokenABI,
     functionName: "balanceOf",
     args: [address],
+    chainId: arcTestnet.id,
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
@@ -39,6 +41,7 @@ export default function FaucetPanel() {
         abi: MockCollateralTokenABI,
         functionName: "mint",
         args: [address, parseUnits(mintAmount.toString(), 18)],
+        chainId: arcTestnet.id,
       });
 
       setStep("success");
