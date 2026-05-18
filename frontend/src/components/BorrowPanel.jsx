@@ -4,7 +4,8 @@ import { parseUnits, formatUnits } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
-import { LENDING_POOL } from "../constants/addresses";
+import ERC20ABI from "../abi/ERC20.json";
+import { LENDING_POOL, USDC_ADDRESS } from "../constants/addresses";
 
 export default function BorrowPanel() {
   const { address } = useAccount();
@@ -24,9 +25,22 @@ export default function BorrowPanel() {
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
+  const { data: usdcBalance } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: ERC20ABI,
+    functionName: "balanceOf",
+    args: [address],
+    chainId: arcTestnet.id,
+    query: { enabled: !!address, refetchInterval: 6000 },
+  });
+
   const maxBorrow = posData ? posData[3] : 0n;
   const maxBorrowFormatted = maxBorrow
     ? parseFloat(formatUnits(maxBorrow, 6)).toFixed(4)
+    : "0";
+
+  const usdcBalanceFormatted = usdcBalance
+    ? parseFloat(formatUnits(usdcBalance, 6)).toFixed(4)
     : "0";
 
   const isLoading = step === "borrowing";
@@ -83,9 +97,15 @@ export default function BorrowPanel() {
       </div>
 
       {/* Info Block */}
-      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5 mb-4 relative z-10">
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Max Borrowable</span>
-        <span className="text-sm font-black text-cyber-purple tracking-tight">{maxBorrowFormatted} USDC</span>
+      <div className="space-y-3 mb-4 relative z-10">
+        <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Wallet Balance</span>
+          <span className="text-sm font-black text-cyber-purple tracking-tight">{usdcBalanceFormatted} USDC</span>
+        </div>
+        <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Max Borrowable</span>
+          <span className="text-sm font-black text-cyber-purple tracking-tight">{maxBorrowFormatted} USDC</span>
+        </div>
       </div>
 
       <form onSubmit={handleBorrow} className="space-y-4 relative z-10">

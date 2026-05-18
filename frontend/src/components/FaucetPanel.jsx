@@ -4,12 +4,14 @@ import { parseUnits, formatUnits } from "viem";
 import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import MockCollateralTokenABI from "../abi/MockCollateralToken.json";
-import { MCOL_ADDRESS } from "../constants/addresses";
+import MockUSDCABI from "../abi/MockUSDC.json";
+import { MCOL_ADDRESS, USDC_ADDRESS } from "../constants/addresses";
 
 export default function FaucetPanel() {
   const { address } = useAccount();
   const [status, setStatus] = useState("");
   const [step, setStep] = useState("idle");
+  const [mintingToken, setMintingToken] = useState("");
 
   const config = useConfig();
   const { writeContractAsync: writeAsync } = useWriteContract();
@@ -23,25 +25,43 @@ export default function FaucetPanel() {
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
-  const isLoading = step === "minting";
-  const balance = colBalance ? parseFloat(formatUnits(colBalance, 18)) : 0;
-  
-  // They can only mint if they have less than 100 MCOL
-  const canMint = balance < 100;
-  const mintAmount = 100;
+  const { data: usdcBalance } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: MockUSDCABI,
+    functionName: "balanceOf",
+    args: [address],
+    chainId: arcTestnet.id,
+    query: { enabled: !!address, refetchInterval: 6000 },
+  });
 
-  async function handleMint() {
+  const isLoading = step === "minting";
+  const mcolBal = colBalance ? parseFloat(formatUnits(colBalance, 18)) : 0;
+  const usdcBal = usdcBalance ? parseFloat(formatUnits(usdcBalance, 6)) : 0;
+  
+  const canMintMcol = mcolBal < 1000;
+  const mintMcolAmount = 100;
+
+  const canMintUsdc = usdcBal < 1000;
+  const mintUsdcAmount = 100;
+
+  async function handleMint(tokenType) {
     if (!address) return;
 
     try {
       setStep("minting");
-      setStatus("Minting 100 MCOL from Faucet…");
+      setMintingToken(tokenType);
+      const amount = tokenType === "MCOL" ? mintMcolAmount : mintUsdcAmount;
+      setStatus(`Minting ${amount} ${tokenType} from Faucet…`);
+
+      const addressToUse = tokenType === "MCOL" ? MCOL_ADDRESS : USDC_ADDRESS;
+      const abiToUse = tokenType === "MCOL" ? MockCollateralTokenABI : MockUSDCABI;
+      const parsedAmount = tokenType === "MCOL" ? parseUnits(amount.toString(), 18) : parseUnits(amount.toString(), 6);
 
       const hash = await writeAsync({
-        address: MCOL_ADDRESS,
-        abi: MockCollateralTokenABI,
+        address: addressToUse,
+        abi: abiToUse,
         functionName: "mint",
-        args: [address, parseUnits(mintAmount.toString(), 18)],
+        args: [address, parsedAmount],
         chainId: arcTestnet.id,
       });
 
@@ -49,10 +69,12 @@ export default function FaucetPanel() {
       await waitForTransactionReceipt(config, { hash });
 
       setStep("success");
-      setStatus(`Successfully minted 100 MCOL!`);
+      setStatus(`Successfully minted ${amount} ${tokenType}!`);
+      setMintingToken("");
     } catch (err) {
       setStep("error");
       setStatus(err?.shortMessage || err?.message || "Transaction failed");
+      setMintingToken("");
     }
   }
 
@@ -70,29 +92,26 @@ export default function FaucetPanel() {
           </div>
           <div>
             <h3 className="text-xl font-black text-white tracking-tight">Testnet Faucet</h3>
-            <p className="text-sm text-slate-400 font-medium">Mint test MCOL to use as collateral</p>
+            <p className="text-sm text-slate-400 font-medium">Mint test tokens for the protocol</p>
           </div>
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-3">
-          <a
-            href="https://faucet.circle.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-6 py-3 rounded-xl text-sm font-bold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center gap-2 uppercase tracking-widest whitespace-nowrap"
-          >
-            Get Test USDC
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
-            </svg>
-          </a>
           <button
-            onClick={handleMint}
-            disabled={isLoading || !canMint}
+            onClick={() => handleMint("USDC")}
+            disabled={isLoading || !canMintUsdc}
+            className="px-6 py-3 rounded-xl text-sm font-bold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center gap-2 uppercase tracking-widest whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading && mintingToken === "USDC" && <Spinner />}
+            {isLoading && mintingToken === "USDC" ? "Minting..." : !canMintUsdc ? "USDC Limit Reached" : "Get Test USDC"}
+          </button>
+          <button
+            onClick={() => handleMint("MCOL")}
+            disabled={isLoading || !canMintMcol}
             className="btn-primary px-8 py-3 rounded-xl text-sm uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 !from-amber-400 !to-amber-600 before:!from-amber-300 before:!to-amber-500 whitespace-nowrap"
           >
-            {isLoading && <Spinner />}
-            {isLoading ? "Minting..." : !canMint ? "MCOL Limit Reached" : "Mint 100 MCOL"}
+            {isLoading && mintingToken === "MCOL" && <Spinner />}
+            {isLoading && mintingToken === "MCOL" ? "Minting..." : !canMintMcol ? "MCOL Limit Reached" : "Mint 100 MCOL"}
           </button>
         </div>
       </div>

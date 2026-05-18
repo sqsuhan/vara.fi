@@ -24,12 +24,23 @@ export default function RepayPanel() {
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
+  const { data: usdcBalance } = useReadContract({
+    address: USDC_ADDRESS,
+    abi: ERC20ABI,
+    functionName: "balanceOf",
+    args: [address],
+    chainId: arcTestnet.id,
+    query: { enabled: !!address, refetchInterval: 6000 },
+  });
+
   const borrowed = posData ? posData[1] : 0n; // 6 dec USDC
   const interest = posData ? posData[2] : 0n; // 6 dec USDC
   const totalDue = borrowed + interest;
+  const usdcBal = usdcBalance || 0n;
 
   const isLoading = step === "approving" || step === "repaying";
   const hasloan = borrowed > 0n;
+  const insufficientBalance = hasloan && usdcBal < totalDue;
 
   async function handleRepay() {
     if (!address || !hasloan) return;
@@ -73,6 +84,7 @@ export default function RepayPanel() {
   const btnText =
     step === "approving" ? "Approving…" :
     step === "repaying" ? "Repaying…" :
+    insufficientBalance ? "Insufficient USDC Balance" :
     "Repay All";
 
   return (
@@ -96,6 +108,12 @@ export default function RepayPanel() {
       {/* Repayment breakdown */}
       <div className="space-y-3 mb-6 relative z-10">
         <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
+          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Wallet Balance</span>
+          <span className={`text-sm font-black tracking-tight ${insufficientBalance ? 'text-red-400' : 'text-white'}`}>
+            {parseFloat(formatUnits(usdcBal, 6)).toFixed(4)} USDC
+          </span>
+        </div>
+        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
           <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Principal</span>
           <span className="text-sm font-black text-white tracking-tight">
             {parseFloat(formatUnits(borrowed, 6)).toFixed(4)} USDC
@@ -117,7 +135,7 @@ export default function RepayPanel() {
 
       <button
         onClick={handleRepay}
-        disabled={isLoading || !hasloan}
+        disabled={isLoading || !hasloan || insufficientBalance}
         className="btn-primary w-full py-4 rounded-2xl text-sm uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 !from-emerald-400 !to-emerald-600 before:!from-emerald-300 before:!to-emerald-500"
       >
         {isLoading && <Spinner />}
