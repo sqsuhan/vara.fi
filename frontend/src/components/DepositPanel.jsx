@@ -85,25 +85,25 @@ export default function DepositPanel() {
   return (
     <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group">
       {/* Decorative gradient orb */}
-      <div className="absolute top-[-50px] left-[-50px] w-32 h-32 bg-cyber-cyan/20 blur-[60px] rounded-full pointer-events-none transition-all duration-500 group-hover:bg-cyber-cyan/40"></div>
+      <div className="absolute top-[-50px] left-[-50px] w-32 h-32 bg-blue-200/50 blur-[60px] rounded-full pointer-events-none transition-all duration-500 group-hover:bg-blue-300/50"></div>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-6 relative z-10">
-        <div className="w-12 h-12 rounded-2xl bg-cyber-cyan/10 border border-cyber-cyan/20 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
-          <svg className="w-6 h-6 text-cyber-cyan" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center group-hover:scale-110 group-hover:-rotate-3 transition-transform duration-300">
+          <svg className="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
           </svg>
         </div>
         <div>
-          <h3 className="text-xl font-black text-white tracking-tight">Deposit</h3>
-          <p className="text-sm text-slate-400 font-medium">Supply MCOL as collateral</p>
+          <h3 className="text-xl font-black text-gray-900 tracking-tight">Deposit</h3>
+          <p className="text-sm text-gray-500 font-medium">Supply MCOL as collateral</p>
         </div>
       </div>
 
       {/* Info Block */}
-      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5 mb-4 relative z-10">
-        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Wallet Balance</span>
-        <span className="text-sm font-black text-cyber-cyan tracking-tight">{colBalanceFormatted} MCOL</span>
+      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/80 border border-gray-200 mb-4 relative z-10">
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Wallet Balance</span>
+        <span className="text-sm font-black text-blue-500 tracking-tight">{colBalanceFormatted} MCOL</span>
       </div>
 
       <form onSubmit={handleDeposit} className="space-y-4 relative z-10">
@@ -116,17 +116,17 @@ export default function DepositPanel() {
             value={amount}
             onChange={(e) => { setAmount(e.target.value); setStep("idle"); setStatus(""); }}
             disabled={isLoading}
-            className="w-full glass-input rounded-2xl px-5 py-4 text-2xl font-bold text-white placeholder-slate-600 disabled:opacity-50 tracking-tight focus:border-cyber-cyan/60 focus:shadow-[0_0_0_3px_rgba(0,229,255,0.15),inset_0_2px_4px_rgba(0,0,0,0.2)]"
+            className="w-full glass-input rounded-2xl px-5 py-4 text-2xl font-bold text-gray-900 placeholder-gray-400 disabled:opacity-50 tracking-tight focus:border-blue-400 focus:shadow-[0_0_0_3px_rgba(59,130,246,0.15),inset_0_2px_4px_rgba(0,0,0,0.05)]"
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
             <button
               type="button"
               onClick={setMax}
-              className="px-2.5 py-1.5 text-xs font-black bg-cyber-cyan/10 text-cyber-cyan hover:bg-cyber-cyan/20 rounded-lg transition-colors uppercase tracking-widest border border-cyber-cyan/20"
+              className="px-2.5 py-1.5 text-xs font-black bg-blue-50 text-blue-500 hover:bg-blue-100 rounded-lg transition-colors uppercase tracking-widest border border-blue-100"
             >
               Max
             </button>
-            <span className="text-sm font-black text-slate-300 pr-2">MCOL</span>
+            <span className="text-sm font-black text-gray-700 pr-2">MCOL</span>
           </div>
         </div>
 
@@ -139,13 +139,12 @@ export default function DepositPanel() {
           {btnText}
         </button>
 
-        {/* Status */}
         <div className={`transition-all duration-300 overflow-hidden ${status ? 'max-h-24 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
           {status && (
             <div className={`text-xs font-bold rounded-xl px-4 py-3 ${
               step === "error"
-                ? "bg-red-500/10 text-red-400 border border-red-500/20"
-                : "bg-cyber-cyan/10 text-cyber-cyan border border-cyber-cyan/20"
+                ? "bg-red-50 text-red-500 border border-red-100"
+                : "bg-blue-50 text-blue-500 border border-blue-100"
             }`}>
               {status}
             </div>

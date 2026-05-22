@@ -90,44 +90,44 @@ export default function RepayPanel() {
   return (
     <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group">
       {/* Decorative gradient orb */}
-      <div className="absolute bottom-[-50px] right-[-50px] w-32 h-32 bg-emerald-500/20 blur-[60px] rounded-full pointer-events-none transition-all duration-500 group-hover:bg-emerald-500/40"></div>
+      <div className="absolute bottom-[-50px] right-[-50px] w-32 h-32 bg-emerald-200/50 blur-[60px] rounded-full pointer-events-none transition-all duration-500 group-hover:bg-emerald-300/50"></div>
 
       {/* Header */}
       <div className="flex items-center gap-4 mb-6 relative z-10">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
-          <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <div className="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+          <svg className="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
         <div>
-          <h3 className="text-xl font-black text-white tracking-tight">Repay Loan</h3>
-          <p className="text-sm text-slate-400 font-medium">Repay your full debt + interest</p>
+          <h3 className="text-xl font-black text-gray-900 tracking-tight">Repay Loan</h3>
+          <p className="text-sm text-gray-500 font-medium">Repay your full debt + interest</p>
         </div>
       </div>
 
       {/* Repayment breakdown */}
       <div className="space-y-3 mb-6 relative z-10">
-        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Wallet Balance</span>
-          <span className={`text-sm font-black tracking-tight ${insufficientBalance ? 'text-red-400' : 'text-white'}`}>
+        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
+          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Wallet Balance</span>
+          <span className={`text-sm font-black tracking-tight ${insufficientBalance ? 'text-red-500' : 'text-gray-900'}`}>
             {parseFloat(formatUnits(usdcBal, 6)).toFixed(4)} USDC
           </span>
         </div>
-        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Principal</span>
-          <span className="text-sm font-black text-white tracking-tight">
+        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
+          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Principal</span>
+          <span className="text-sm font-black text-gray-900 tracking-tight">
             {parseFloat(formatUnits(borrowed, 6)).toFixed(4)} USDC
           </span>
         </div>
-        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-midnight-800/80 border border-white/5">
-          <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Accrued Interest</span>
-          <span className="text-sm font-black text-amber-400 tracking-tight">
+        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
+          <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Accrued Interest</span>
+          <span className="text-sm font-black text-amber-500 tracking-tight">
             +{parseFloat(formatUnits(interest, 6)).toFixed(6)} USDC
           </span>
         </div>
-        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-transparent border border-emerald-500/20 shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]">
-          <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">Total Due</span>
-          <span className="text-sm font-black text-emerald-400 tracking-tight">
+        <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100">
+          <span className="text-xs font-black text-emerald-500 uppercase tracking-wider">Total Due</span>
+          <span className="text-sm font-black text-emerald-500 tracking-tight">
             {parseFloat(formatUnits(totalDue, 6)).toFixed(6)} USDC
           </span>
         </div>
@@ -147,8 +147,8 @@ export default function RepayPanel() {
         {status && (
           <div className={`text-xs font-bold rounded-xl px-4 py-3 ${
             step === "error"
-              ? "bg-red-500/10 text-red-400 border border-red-500/20"
-              : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+              ? "bg-red-50 text-red-500 border border-red-100"
+              : "bg-emerald-50 text-emerald-500 border border-emerald-100"
           }`}>
             {status}
           </div>

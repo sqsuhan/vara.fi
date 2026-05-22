@@ -81,18 +81,18 @@ export default function FaucetPanel() {
   return (
     <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group mb-8">
       {/* Decorative gradient orb */}
-      <div className="absolute top-[-50px] right-[-50px] w-32 h-32 bg-amber-400/20 blur-[60px] rounded-full pointer-events-none transition-all duration-500 group-hover:bg-amber-400/40"></div>
+      <div className="absolute top-[-50px] right-[-50px] w-32 h-32 bg-amber-200/50 blur-[60px] rounded-full pointer-events-none transition-all duration-500 group-hover:bg-amber-300/50"></div>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-            <svg className="w-6 h-6 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+            <svg className="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div>
-            <h3 className="text-xl font-black text-white tracking-tight">Testnet Faucet</h3>
-            <p className="text-sm text-slate-400 font-medium">Mint test tokens for the protocol</p>
+            <h3 className="text-xl font-black text-gray-900 tracking-tight">Testnet Faucet</h3>
+            <p className="text-sm text-gray-500 font-medium">Mint test tokens for the protocol</p>
           </div>
         </div>
 
@@ -100,7 +100,7 @@ export default function FaucetPanel() {
           <button
             onClick={() => handleMint("USDC")}
             disabled={isLoading || !canMintUsdc}
-            className="px-6 py-3 rounded-xl text-sm font-bold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all hover:shadow-[0_0_15px_rgba(255,255,255,0.1)] flex items-center gap-2 uppercase tracking-widest whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 rounded-xl text-sm font-bold text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-all hover:shadow-sm flex items-center gap-2 uppercase tracking-widest whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading && mintingToken === "USDC" && <Spinner />}
             {isLoading && mintingToken === "USDC" ? "Minting..." : !canMintUsdc ? "USDC Limit Reached" : "Get Test USDC"}
@@ -121,8 +121,8 @@ export default function FaucetPanel() {
         {status && (
           <div className={`text-xs font-bold rounded-xl px-4 py-3 ${
             step === "error"
-              ? "bg-red-500/10 text-red-400 border border-red-500/20"
-              : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+              ? "bg-red-50 text-red-500 border border-red-100"
+              : "bg-amber-50 text-amber-500 border border-amber-100"
           }`}>
             {status}
           </div>
