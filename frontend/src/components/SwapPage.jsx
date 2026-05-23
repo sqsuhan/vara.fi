@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAccount, useReadContract, useWriteContract, useConfig, useBalance } from "wagmi";
 import { parseUnits, formatUnits } from "viem";
-import { waitForTransactionReceipt } from "wagmi/actions";
+import { waitForTransactionReceipt, readContract } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import VaraSwapABI from "../abi/VaraSwap.json";
 import { SWAP_ADDRESS, EUR_ADDRESS, CIRBTC_ADDRESS, USDC_NATIVE, VAUSDC_ADDRESS } from "../constants/addresses";
@@ -59,7 +59,7 @@ export default function SwapPage() {
   // Fetch Exchange Rate
   const { data: rateData } = useReadContract({
     address: SWAP_ADDRESS,
-    abi: VaraSwapABI,
+    abi: VaraSwapABI.abi,
     functionName: "getRate",
     args: [fromToken.address, toToken.address],
     chainId: arcTestnet.id,
@@ -75,7 +75,7 @@ export default function SwapPage() {
   // Calculate Output Amount live
   const { data: outData } = useReadContract({
     address: SWAP_ADDRESS,
-    abi: VaraSwapABI,
+    abi: VaraSwapABI.abi,
     functionName: "getAmountOut",
     args: [fromToken.address, toToken.address, amountIn ? parseUnits(amountIn, fromToken.decimals) : 0n],
     chainId: arcTestnet.id,
@@ -114,15 +114,12 @@ export default function SwapPage() {
       const parsedAmount = parseUnits(amountIn, fromToken.decimals);
 
       // Check allowance
-      const allowanceData = await config.queryClient.fetchQuery({
-        queryKey: ['readContract', { address: fromToken.address, functionName: 'allowance', args: [address, SWAP_ADDRESS] }],
-        queryFn: () => config.getAction('readContract')({
-          address: fromToken.address,
-          abi: erc20Abi,
-          functionName: 'allowance',
-          args: [address, SWAP_ADDRESS],
-          chainId: arcTestnet.id,
-        })
+      const allowanceData = await readContract(config, {
+        address: fromToken.address,
+        abi: erc20Abi,
+        functionName: 'allowance',
+        args: [address, SWAP_ADDRESS],
+        chainId: arcTestnet.id,
       });
 
       if (allowanceData < parsedAmount) {
@@ -141,7 +138,7 @@ export default function SwapPage() {
 
       const swapHash = await writeContractAsync({
         address: SWAP_ADDRESS,
-        abi: VaraSwapABI,
+        abi: VaraSwapABI.abi,
         functionName: "swap",
         args: [fromToken.address, toToken.address, parsedAmount],
         chainId: arcTestnet.id,
