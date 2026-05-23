@@ -25,7 +25,7 @@ export default function FaucetPanel() {
 
   const isLoading = step === "minting";
   const mcolBal = colBalance ? parseFloat(formatUnits(colBalance, 18)) : 0;
-  
+
   const canMintMcol = mcolBal < 1000;
   const mintMcolAmount = 100;
 
@@ -82,7 +82,7 @@ export default function FaucetPanel() {
             rel="noopener noreferrer"
             className="px-6 py-3 rounded-xl text-sm font-bold text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-all hover:shadow-sm flex items-center gap-2 uppercase tracking-widest whitespace-nowrap"
           >
-            Get VaUSDC for Gas ↗
+            Get USDC faucet ↗
           </a>
           <button
             onClick={handleMint}
@@ -98,11 +98,10 @@ export default function FaucetPanel() {
       {/* Status */}
       <div className={`transition-all duration-300 overflow-hidden relative z-10 ${status ? 'max-h-24 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
         {status && (
-          <div className={`text-xs font-bold rounded-xl px-4 py-3 ${
-            step === "error"
+          <div className={`text-xs font-bold rounded-xl px-4 py-3 ${step === "error"
               ? "bg-red-50 text-red-500 border border-red-100"
               : "bg-amber-50 text-amber-500 border border-amber-100"
-          }`}>
+            }`}>
             {status}
           </div>
         )}
