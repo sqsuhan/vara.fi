@@ -8,8 +8,10 @@ import BorrowPanel from "./components/BorrowPanel";
 import RepayPanel from "./components/RepayPanel";
 import WithdrawPanel from "./components/WithdrawPanel";
 import FaucetPanel from "./components/FaucetPanel";
+import SwapPage from "./components/SwapPage";
 
 function Dapp() {
+  const [activeTab, setActiveTab] = React.useState("markets");
   const { isConnected, address } = useAccount();
   const { connectors, isPending } = useConnect();
   const { openConnectModal } = useConnectModal();
@@ -71,6 +73,29 @@ function Dapp() {
                 </span>
               </div>
             </div>
+
+            {isConnected && (
+              <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
+                <button 
+                  onClick={() => setActiveTab("markets")}
+                  className={`text-sm font-bold tracking-wider uppercase transition-colors ${activeTab === "markets" ? "text-blue-600" : "text-gray-400 hover:text-gray-900"}`}
+                >
+                  Markets
+                </button>
+                <button 
+                  onClick={() => setActiveTab("swap")}
+                  className={`text-sm font-bold tracking-wider uppercase transition-colors ${activeTab === "swap" ? "text-blue-600" : "text-gray-400 hover:text-gray-900"}`}
+                >
+                  Swap
+                </button>
+                <button 
+                  onClick={() => setActiveTab("portfolio")}
+                  className={`text-sm font-bold tracking-wider uppercase transition-colors ${activeTab === "portfolio" ? "text-blue-600" : "text-gray-400 hover:text-gray-900"}`}
+                >
+                  Portfolio
+                </button>
+              </div>
+            )}
             
             {isConnected ? (
               <div className="flex items-center gap-4 animate-slide-up">
@@ -111,15 +136,28 @@ function Dapp() {
             isSwitching={isSwitching} 
           />
         ) : (
-          <div className="space-y-12 animate-slide-up">
-            <FaucetPanel />
-            <Dashboard />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-              <DepositPanel />
-              <BorrowPanel />
-              <RepayPanel />
-              <WithdrawPanel />
-            </div>
+          <div className="animate-slide-up">
+            {activeTab === "markets" && (
+              <div className="space-y-12">
+                <FaucetPanel />
+                <Dashboard />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+                  <DepositPanel />
+                  <BorrowPanel />
+                  <RepayPanel />
+                  <WithdrawPanel />
+                </div>
+              </div>
+            )}
+            {activeTab === "swap" && (
+              <SwapPage />
+            )}
+            {activeTab === "portfolio" && (
+              <div className="text-center mt-20">
+                <h2 className="text-3xl font-black text-gray-900 mb-4">Portfolio</h2>
+                <p className="text-gray-500">Portfolio view coming soon.</p>
+              </div>
+            )}
           </div>
         )}
       </main>

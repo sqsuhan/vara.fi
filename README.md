@@ -136,7 +136,7 @@ Open http://localhost:5173 in your browser.
 |---|---|
 | MockCollateralToken (MCOL) | _TBD_ |
 | MockPriceOracle | _TBD_ |
-| MockUSDC | _TBD_ |
+| VaUSDC | _TBD_ |
 | LendingPool | _TBD_ |
 
 ---

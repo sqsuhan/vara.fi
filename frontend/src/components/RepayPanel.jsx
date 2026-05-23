@@ -5,7 +5,7 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 import ERC20ABI from "../abi/ERC20.json";
-import { LENDING_POOL, USDC_ADDRESS } from "../constants/addresses";
+import { LENDING_POOL, VAUSDC_ADDRESS } from "../constants/addresses";
 
 export default function RepayPanel() {
   const { address } = useAccount();
@@ -24,8 +24,8 @@ export default function RepayPanel() {
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
-  const { data: usdcBalance } = useReadContract({
-    address: USDC_ADDRESS,
+  const { data: vaUsdcBalance } = useReadContract({
+    address: VAUSDC_ADDRESS,
     abi: ERC20ABI,
     functionName: "balanceOf",
     args: [address],
@@ -33,24 +33,24 @@ export default function RepayPanel() {
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
-  const borrowed = posData ? posData[1] : 0n; // 6 dec USDC
-  const interest = posData ? posData[2] : 0n; // 6 dec USDC
+  const borrowed = posData ? posData[1] : 0n; // 6 dec VaUSDC
+  const interest = posData ? posData[2] : 0n; // 6 dec VaUSDC
   const totalDue = borrowed + interest;
-  const usdcBal = usdcBalance || 0n;
+  const vaUsdcBal = vaUsdcBalance || 0n;
 
   const isLoading = step === "approving" || step === "repaying";
   const hasloan = borrowed > 0n;
-  const insufficientBalance = hasloan && usdcBal < totalDue;
+  const insufficientBalance = hasloan && vaUsdcBal < totalDue;
 
   async function handleRepay() {
     if (!address || !hasloan) return;
 
     try {
       setStep("approving");
-      setStatus("Approving USDC transfer…");
+      setStatus("Approving VaUSDC transfer…");
 
       const approveHash = await writeAsync({
-        address: USDC_ADDRESS,
+        address: VAUSDC_ADDRESS,
         abi: ERC20ABI,
         functionName: "approve",
         args: [LENDING_POOL, maxUint256],
@@ -84,7 +84,7 @@ export default function RepayPanel() {
   const btnText =
     step === "approving" ? "Approving…" :
     step === "repaying" ? "Repaying…" :
-    insufficientBalance ? "Insufficient USDC Balance" :
+    insufficientBalance ? "Insufficient VaVaUSDC Balance" :
     "Repay All";
 
   return (
@@ -110,25 +110,25 @@ export default function RepayPanel() {
         <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Wallet Balance</span>
           <span className={`text-sm font-black tracking-tight ${insufficientBalance ? 'text-red-500' : 'text-gray-900'}`}>
-            {parseFloat(formatUnits(usdcBal, 6)).toFixed(4)} USDC
+            {parseFloat(formatUnits(vaUsdcBal, 6)).toFixed(4)} VaUSDC
           </span>
         </div>
         <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Principal</span>
           <span className="text-sm font-black text-gray-900 tracking-tight">
-            {parseFloat(formatUnits(borrowed, 6)).toFixed(4)} USDC
+            {parseFloat(formatUnits(borrowed, 6)).toFixed(4)} VaUSDC
           </span>
         </div>
         <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Accrued Interest</span>
           <span className="text-sm font-black text-amber-500 tracking-tight">
-            +{parseFloat(formatUnits(interest, 6)).toFixed(6)} USDC
+            +{parseFloat(formatUnits(interest, 6)).toFixed(6)} VaUSDC
           </span>
         </div>
         <div className="flex justify-between items-center px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100">
           <span className="text-xs font-black text-emerald-500 uppercase tracking-wider">Total Due</span>
           <span className="text-sm font-black text-emerald-500 tracking-tight">
-            {parseFloat(formatUnits(totalDue, 6)).toFixed(6)} USDC
+            {parseFloat(formatUnits(totalDue, 6)).toFixed(6)} VaUSDC
           </span>
         </div>
       </div>

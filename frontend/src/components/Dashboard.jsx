@@ -120,11 +120,11 @@ export default function Dashboard() {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-black text-gray-900 tracking-tight">{borrowFmt}</span>
-            <span className="text-sm font-bold text-purple-500">USDC</span>
+            <span className="text-sm font-bold text-purple-500">VaUSDC</span>
           </div>
           <div className="mt-2 flex items-center gap-1.5 text-xs font-medium">
             <span className="text-gray-500">Interest:</span>
-            <span className="text-amber-500">+{intFmt} USDC</span>
+            <span className="text-amber-500">+{intFmt} VaUSDC</span>
           </div>
         </div>
 
@@ -142,7 +142,7 @@ export default function Dashboard() {
             <span className="text-2xl font-black text-gray-900 tracking-tight">
               {maxBorrow ? parseFloat(formatUnits(maxBorrow, 6)).toFixed(4) : "0.0000"}
             </span>
-            <span className="text-sm font-bold text-indigo-500">USDC</span>
+            <span className="text-sm font-bold text-indigo-500">VaUSDC</span>
           </div>
         </div>
       </div>

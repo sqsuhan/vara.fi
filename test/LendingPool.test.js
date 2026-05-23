@@ -18,7 +18,7 @@ describe("LendingPool", function () {
 
     const MCOLFactory  = await ethers.getContractFactory("MockCollateralToken");
     const OracleFactory = await ethers.getContractFactory("MockPriceOracle");
-    const USDCFactory  = await ethers.getContractFactory("MockUSDC");
+    const USDCFactory  = await ethers.getContractFactory("VaUSDC");
     const PoolFactory  = await ethers.getContractFactory("LendingPool");
 
     mcol   = await MCOLFactory.deploy();

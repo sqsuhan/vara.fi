@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-/// @title MockUSDC
+/// @title VaUSDC
 /// @notice Testnet USDC with 6 decimals, matching real USDC.
-contract MockUSDC is ERC20 {
-    constructor() ERC20("Mock USDC", "USDC") {
-        _mint(msg.sender, 10_000_000 * 10 ** decimals()); // 10M USDC
+contract VaUSDC is ERC20 {
+    constructor() ERC20("Vara USDC", "VaUSDC") {
+        _mint(msg.sender, 10_000_000 * 10 ** decimals()); // 10M VaUSDC
     }
 
     function decimals() public pure override returns (uint8) {

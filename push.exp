@@ -1,0 +1,9 @@
+#!/usr/bin/expect -f
+spawn git push
+expect {
+    "Enter passphrase" {
+        send "aizen\r"
+        exp_continue
+    }
+    eof
+}

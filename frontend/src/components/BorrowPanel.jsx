@@ -5,7 +5,7 @@ import { waitForTransactionReceipt } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import LendingPoolABI from "../abi/LendingPool.json";
 import ERC20ABI from "../abi/ERC20.json";
-import { LENDING_POOL, USDC_ADDRESS } from "../constants/addresses";
+import { LENDING_POOL, VAUSDC_ADDRESS } from "../constants/addresses";
 
 export default function BorrowPanel() {
   const { address } = useAccount();
@@ -25,8 +25,8 @@ export default function BorrowPanel() {
     query: { enabled: !!address, refetchInterval: 6000 },
   });
 
-  const { data: usdcBalance } = useReadContract({
-    address: USDC_ADDRESS,
+  const { data: vaUsdcBalance } = useReadContract({
+    address: VAUSDC_ADDRESS,
     abi: ERC20ABI,
     functionName: "balanceOf",
     args: [address],
@@ -39,8 +39,8 @@ export default function BorrowPanel() {
     ? parseFloat(formatUnits(maxBorrow, 6)).toFixed(4)
     : "0";
 
-  const usdcBalanceFormatted = usdcBalance
-    ? parseFloat(formatUnits(usdcBalance, 6)).toFixed(4)
+  const vaUsdcBalanceFormatted = vaUsdcBalance
+    ? parseFloat(formatUnits(vaUsdcBalance, 6)).toFixed(4)
     : "0";
 
   const isLoading = step === "borrowing";
@@ -52,7 +52,7 @@ export default function BorrowPanel() {
     try {
       const parsed = parseUnits(amount, 6);
       setStep("borrowing");
-      setStatus("Borrowing USDC from protocol…");
+      setStatus("Borrowing VaUSDC from protocol…");
 
       const hash = await writeAsync({
         address: LENDING_POOL,
@@ -66,7 +66,7 @@ export default function BorrowPanel() {
       await waitForTransactionReceipt(config, { hash });
 
       setStep("success");
-      setStatus(`Borrow successful! Your USDC balance has been updated.`);
+      setStatus(`Borrow successful! Your VaUSDC balance has been updated.`);
       setAmount("");
     } catch (err) {
       setStep("error");
@@ -100,11 +100,11 @@ export default function BorrowPanel() {
       <div className="space-y-3 mb-4 relative z-10">
         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Wallet Balance</span>
-          <span className="text-sm font-black text-purple-500 tracking-tight">{usdcBalanceFormatted} USDC</span>
+          <span className="text-sm font-black text-purple-500 tracking-tight">{vaUsdcBalanceFormatted} VaUSDC</span>
         </div>
         <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-white/80 border border-gray-200">
           <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Max Borrowable</span>
-          <span className="text-sm font-black text-purple-500 tracking-tight">{maxBorrowFormatted} USDC</span>
+          <span className="text-sm font-black text-purple-500 tracking-tight">{maxBorrowFormatted} VaUSDC</span>
         </div>
       </div>
 
@@ -128,7 +128,7 @@ export default function BorrowPanel() {
             >
               Max
             </button>
-            <span className="text-sm font-black text-gray-700 pr-2">USDC</span>
+            <span className="text-sm font-black text-gray-700 pr-2">VaUSDC</span>
           </div>
         </div>
 
