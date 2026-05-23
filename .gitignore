@@ -22,3 +22,4 @@ coverage.json
 # Misc
 .DS_Store
 *.log
+.vercel
