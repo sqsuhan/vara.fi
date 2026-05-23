@@ -83,9 +83,9 @@ export default function RepayPanel() {
 
   const btnText =
     step === "approving" ? "Approving…" :
-    step === "repaying" ? "Repaying…" :
-    insufficientBalance ? "Insufficient VaVaUSDC Balance" :
-    "Repay All";
+      step === "repaying" ? "Repaying…" :
+        insufficientBalance ? "Insufficient VaUSDC Balance" :
+          "Repay All";
 
   return (
     <div className="glass-panel rounded-3xl p-6 relative overflow-hidden group">
@@ -145,11 +145,10 @@ export default function RepayPanel() {
       {/* Status */}
       <div className={`transition-all duration-300 overflow-hidden relative z-10 ${status ? 'max-h-24 opacity-100 mt-4' : 'max-h-0 opacity-0'}`}>
         {status && (
-          <div className={`text-xs font-bold rounded-xl px-4 py-3 ${
-            step === "error"
+          <div className={`text-xs font-bold rounded-xl px-4 py-3 ${step === "error"
               ? "bg-red-50 text-red-500 border border-red-100"
               : "bg-emerald-50 text-emerald-500 border border-emerald-100"
-          }`}>
+            }`}>
             {status}
           </div>
         )}
