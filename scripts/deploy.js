@@ -48,13 +48,9 @@ async function main() {
   await (await usdc.approve(poolAddress, poolSeedAmount)).wait();
   await (await lendingPool.seedLiquidity(poolSeedAmount)).wait();
 
-  // ── 5. Deploy MockEUR ─────────────────────────────────────────────────────
-  console.log("\n[5/6] Deploying MockEUR...");
-  const MockEUR = await ethers.getContractFactory("MockEUR");
-  const eur = await MockEUR.deploy();
-  await eur.waitForDeployment();
-  const eurAddress = await eur.getAddress();
-  console.log("MockEUR deployed to:", eurAddress);
+  // ── 5. Use External EURC CA ───────────────────────────────────────────────
+  const eurAddress = "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a";
+  console.log("Using EURC CA:", eurAddress);
 
   // ── 6. Deploy VaraSwap ────────────────────────────────────────────────────
   console.log("\n[6/6] Deploying VaraSwap...");
@@ -124,7 +120,7 @@ async function main() {
   console.log("MockPriceOracle:      ", oracleAddress);
   console.log("VaUSDC:               ", usdcAddress);
   console.log("LendingPool:          ", poolAddress);
-  console.log("MockEUR:              ", eurAddress);
+  console.log("EURC:                 ", eurAddress);
   console.log("VaraSwap:             ", swapAddress);
   console.log("═══════════════════════════════════════════════════════════");
 
@@ -133,7 +129,7 @@ async function main() {
     MockPriceOracle: oracleAddress,
     VaUSDC: usdcAddress,
     LendingPool: poolAddress,
-    MockEUR: eurAddress,
+    EURC: eurAddress,
     VaraSwap: swapAddress
   };
 

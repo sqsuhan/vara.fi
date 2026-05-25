@@ -4,7 +4,7 @@ import { parseUnits, formatUnits } from "viem";
 import { waitForTransactionReceipt, readContract } from "wagmi/actions";
 import { arcTestnet } from "../wagmi";
 import VaraSwapABI from "../abi/VaraSwap.json";
-import { SWAP_ADDRESS, EUR_ADDRESS, CIRBTC_ADDRESS, USDC_NATIVE, VAUSDC_ADDRESS } from "../constants/addresses";
+import { SWAP_ADDRESS, EURC_ADDRESS, CIRBTC_ADDRESS, USDC_NATIVE, VAUSDC_ADDRESS } from "../constants/addresses";
 
 const erc20Abi = [
   { type: 'function', name: 'approve', inputs: [{ name: 'spender', type: 'address' }, { name: 'amount', type: 'uint256' }], outputs: [{ type: 'bool' }] },
@@ -14,14 +14,14 @@ const erc20Abi = [
 ];
 
 const TOKENS = {
-  EUR: { symbol: "EUR", address: EUR_ADDRESS, decimals: 18, icon: "🇪🇺" },
+  EURC: { symbol: "EURC", address: EURC_ADDRESS, decimals: 6, icon: "🇪🇺" },
   CIRBTC: { symbol: "cirBTC", address: CIRBTC_ADDRESS, decimals: 8, icon: "₿" },
   USDC: { symbol: "USDC Native", address: USDC_NATIVE, decimals: 6, icon: "💵" },
   VAUSDC: { symbol: "VaUSDC", address: VAUSDC_ADDRESS, decimals: 6, icon: "🔵" }
 };
 
 const PAIRS = {
-  EUR: ["USDC", "VAUSDC"],
+  EURC: ["USDC", "VAUSDC"],
   CIRBTC: ["USDC", "VAUSDC"],
   USDC: ["VAUSDC"],
   VAUSDC: ["USDC"]
@@ -32,7 +32,7 @@ export default function SwapPage() {
   const config = useConfig();
   const { writeContractAsync } = useWriteContract();
 
-  const [fromTokenKey, setFromTokenKey] = useState("EUR");
+  const [fromTokenKey, setFromTokenKey] = useState("EURC");
   const [toTokenKey, setToTokenKey] = useState("USDC");
   const [amountIn, setAmountIn] = useState("");
   const [amountOut, setAmountOut] = useState("0.00");
