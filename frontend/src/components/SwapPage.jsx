@@ -15,7 +15,7 @@ const erc20Abi = [
 
 const TOKENS = {
   EUR: { symbol: "EUR", address: EUR_ADDRESS, decimals: 18, icon: "🇪🇺" },
-  CIRBTC: { symbol: "cirBTC", address: CIRBTC_ADDRESS, decimals: 18, icon: "₿" },
+  CIRBTC: { symbol: "cirBTC", address: CIRBTC_ADDRESS, decimals: 8, icon: "₿" },
   USDC: { symbol: "USDC Native", address: USDC_NATIVE, decimals: 6, icon: "💵" },
   VAUSDC: { symbol: "VaUSDC", address: VAUSDC_ADDRESS, decimals: 6, icon: "🔵" }
 };
